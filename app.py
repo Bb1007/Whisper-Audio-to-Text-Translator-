@@ -26,19 +26,20 @@ if audio_file is not None:
 
     st.info('Transcribing...')
 
-    # Save uploaded audio to temp file
+    # Save uploaded file to temp
+    import tempfile
+    import os
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
         tmp.write(audio_file.read())
-        tmp_path = tmp.name
+        tmp_path = tmp.name  # ✅ Now tmp_path exists
 
-    # Transcribe
+    # Now transcribe it
     with st.spinner("Transcribing..."):
         result = model.transcribe(tmp_path)
+    os.remove(tmp_path)  # Clean up
 
-    os.remove(tmp_path)  # Clean up temp file
-
-    # Display results
     st.success('Transcription Complete!')
     st.text_area('Transcript:', result['text'], height=300)
     st.download_button('📥 Download Transcript', result['text'], file_name='transcript.txt', mime='text/plain')
+
 
