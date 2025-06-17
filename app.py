@@ -21,7 +21,16 @@ if audio_file is not None:
     audio_bytes = audio_file.read()
     audio_io = BytesIO(audio_bytes)
 
-    result = model.transcribe(audio_io)
+    import tempfile
+    import os
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
+        tmp.write(audio_io.read())
+        tmp_path = tmp.name
+
+    result = model.transcribe(tmp_path)
+    os.remove(tmp_path)  # Clean up
+
 
     st.success('Transcription Complete!')
     st.text_area('Transcript:', result['text'], height=300)
